@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      transition: all 0.3s ease;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    section, .login-section {
+      background-color: rgba(255, 255, 255, 0.03);
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    h3 {
+      color: #00ffff;
+      border-bottom: 1px solid #00ffff;
+      padding-bottom: 5px;
+    }
+    input, button, textarea {
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      border: 1px solid #555;
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 6px;
+      width: 100%;
+    }
+    button {
+      background-color: #00bcd4;
+      color: #000;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0097a7;
+    }
+    .output {
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 10px;
+      border-left: 4px solid #00ffff;
+      white-space: pre-wrap;
+    }
+    nav {
+      background-color: rgba(0,0,0,0.5);
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    nav button {
+      display: inline-block;
+      margin: 4px;
+      width: auto;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="login-container" id="loginBox">
+  <h2>Login Dashboard</h2>
+  <input type="text" id="username" placeholder="Username"/>
+  <input type="password" id="password" placeholder="Password"/>
+  <button onclick="login()">Login</button>
+  <div id="loginStatus" style="color:red; text-align:center;"></div>
+</div>
+
+<div class="dashboard" id="dashboardBox" style="display:none;">
+  <h2>🔍 ALL - TOOLS</h2>
+  <nav>
+
+  <section id="ip" class="active">
+    <h3>🌐 IP Lookup (Sendiri)</h3>
+    <button onclick="lookupIP()">Cek IP Saya</button>
+    <div class="output" id="ipResult">Belum ada data...</div>
+  </section>
+
+  <section id="iptrack">
+    <h3>🎯 Track IP Target</h3>
+    <input type="text" id="ipTarget" placeholder="Contoh: 8.8.8.8">
+    <button onclick="trackIP()">Lacak</button>
+    <div class="output" id="trackResult"></div>
+    <div id="mapFrame"></div>
+  </section>
+  
+  <section id="lookup">
+  <h3>📱 Lookup Nomor HP</h3>
+  <input type="text" id="phoneInput" placeholder="Contoh: 081234567890">
+  <button onclick="lookupNumber()">Cek Nomor</button>
+  <div class="output" id="lookupResult">Masukkan nomor HP di atas untuk melihat info OSINT.</div>
+</section>
+
+  <section id="dork">
+  <h3>🕵️ Google Dorking</h3>
+  <input type="text" id="dorkInput" placeholder='Contoh: site:go.id inurl:login'>
+  <button onclick="doDork()">Cari Dork</button>
+  <div class="output" id="dorkResult">Gunakan dengan bijak. Dorking menampilkan hasil dari Google.</div>
+</section>
+
+<section id="loginfinder">
+  <h3>🔐 Cari Halaman Login Website</h3>
+  <input type="text" id="domainLogin" placeholder="contoh: example.com">
+  <button onclick="findLoginPanel()">Cari Login Panel</button>
+  <div class="output" id="loginResult">Hasil pencarian login akan terbuka di tab baru.</div>
+</section>
+
+  <section id="nik">
+    <h3>🆔 Cek NIK</h3>
+    <input type="text" id="nikInput" placeholder="Masukkan NIK 16 digit">
+    <button onclick="parseNIK()">Cek</button>
+    <div class="output" id="nikResult"></div>
+  </section>
+
+  <section id="phish">
+  <h3>🧪 Cek URL Phishing</h3>
+  <input type="text" id="phishInput" placeholder="https://contoh.com/login">
+  <button onclick="checkPhishing()">Cek URL</button>
+  <div class="output" id="phishResult">Masukkan URL di atas untuk analisis keamanan link.</div>
+</section>
+
+    <section id="defacer">
+      <h3>💣 Jejak Digital Defacer</h3>
+      <input type="text" id="defacerInput" placeholder="Masukkan nickname defacer...">
+      <button onclick="searchDefacer()">Cari Jejak</button>
+      <div class="output" id="defacerResult"></div>
+    </section>
+    
+  <section id="sosmed">
+    <h3>🌍 Social Media Lookup</h3>
+    <input type="text" id="usernameInput" placeholder="Username (tanpa @)">
+    <button onclick="lookupSosmed()">Cari Jejak</button>
+    <div class="output" id="sosmedResult"></div>
+  </section>
+</div>
+
+<script>
+  const USER = "VynGrup";
+  const PASS = "123";
+
+  function login() {
+    const u = document.getElementById("username").value;
+    const p = document.getElementById("password").value;
+    if (u === USER && p === PASS) {
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("dashboardBox").style.display = "block";
+    } else {
+      document.getElementById("loginStatus").textContent = "Username atau password salah.";
+    }
+  }
+
+  function showTab(id) {
+    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+  }
+
+  function lookupIP() {
+    fetch("https://ipinfo.io/json?token=YOUR_TOKEN")
+      .then(res => res.json())
+      .then(data => {
+        const output = `IP: ${data.ip}
+Kota: ${data.city}
+Wilayah: ${data.region}
+Negara: ${data.country}
+Lokasi: ${data.loc}
+ISP: ${data.org}`;
+        document.getElementById("ipResult").textContent = output;
+        window.lastResult = output;
+      }).catch(() => {
+        document.getElementById("ipResult").textContent = "Gagal mengambil data.";
+      });
+  }
+
+function checkPhishing() {
+  const urlInput = document.getElementById("phishInput").value.trim();
+  const result = document.getElementById("phishResult");
+
+  try {
+    const url = new URL(urlInput);
+    const domain = url.hostname;
+    const isHTTPS = url.protocol === "https:";
+    const suspiciousKeywords = ["login", "verify", "secure", "update", "account", "bank", "paypal"];
+    const knownPhishPatterns = ["facebook-", "secure-", "login-", "account-", "verify-"];
+    const trustedDomains = ["facebook.com", "google.com", "instagram.com", "tokopedia.com", "bukalapak.com"];
+
+    const keywordMatch = suspiciousKeywords.some(k => urlInput.toLowerCase().includes(k));
+    const patternMatch = knownPhishPatterns.some(p => domain.toLowerCase().includes(p));
+    const isTrusted = trustedDomains.some(td => domain.endsWith(td));
+
+    let msg = `🔍 URL: ${urlInput}\n\n`;
+    msg += `🔐 Protokol HTTPS: ${isHTTPS ? "✅ Ya" : "❌ Tidak"}\n`;
+    msg += `🧠 Kata mencurigakan: ${keywordMatch ? "⚠️ Ditemukan" : "✅ Aman"}\n`;
+    msg += `🎯 Pola phishing: ${patternMatch ? "⚠️ Mencurigakan" : "✅ Tidak terdeteksi"}\n`;
+    msg += `✅ Domain terpercaya: ${isTrusted ? "Ya" : "Tidak"}\n`;
+
+    if (!isHTTPS || keywordMatch || patternMatch || !isTrusted) {
+      msg += `\n⚠️ *Peringatan: Link ini berpotensi phishing!* Harap berhati-hati.`;
+    } else {
+      msg += `\n✅ Link terlihat aman berdasarkan analisis dasar.`;
+    }
+
+    result.textContent = msg;
+    window.lastResult = msg;
+
+  } catch (err) {
+    result.textContent = "❌ URL tidak valid. Pastikan formatnya benar (contoh: https://example.com)";
+  }
+}
+
+  function trackIP() {
+    const ip = document.getElementById("ipTarget").value;
+    fetch(`https://ipinfo.io/${ip}/json?token=48ffadc2857ae5`)
+      .then(res => res.json())
+      .then(data => {
+        const output = `IP: ${data.ip}
+Kota: ${data.city}
+Wilayah: ${data.region}
+Negara: ${data.country}
+Lokasi: ${data.loc}
+ISP: ${data.org}`;
+        document.getElementById("trackResult").textContent = output;
+        window.lastResult = output;
+
+        if (data.loc) {
+          const [lat, lon] = data.loc.split(",");
+          document.getElementById("mapFrame").innerHTML = `
+            <iframe src="https://maps.google.com/maps?q=${lat},${lon}&z=14&output=embed"></iframe>`;
+        }
+      }).catch(() => {
+        document.getElementById("trackResult").textContent = "IP tidak ditemukan atau error.";
+      });
+  }
+
+function lookupNumber() {
+  const input = document.getElementById("phoneInput").value.trim();
+  const resultDiv = document.getElementById("lookupResult");
+
+  if (!/^08[1-9][0-9]{7,10}$/.test(input)) {
+    resultDiv.textContent = "❌ Format nomor tidak valid. Gunakan format: 08xxxxxxxxxx";
+    return;
+  }
+
+  const provider = getProvider(input);
+  const wilayah = getWilayah(input);
+  const nikSimulasi = "3276************"; // dummy
+  const pemilik = ["Budi", "Chandra", "Siti", "Andi", "Rina", "Agus"][Math.floor(Math.random() * 5)];
+
+  const result = `
+📞 Nomor: ${input}
+📡 Provider: ${provider}
+📍 Wilayah: ${wilayah}
+🧾 Status: Terdaftar (simulasi)
+🆔 Perkiraan NIK: ${nikSimulasi}
+👤 Dugaan Nama Pemilik: ${pemilik}
+✅ Validitas Format: Benar
+🔍 Data tambahan dapat dicari melalui dorking sosial media atau reverse search.
+  `;
+  resultDiv.textContent = result;
+  window.lastResult = result;
+}
+
+function getProvider(no) {
+  if (no.startsWith("0811") || no.startsWith("0812") || no.startsWith("0813")) return "Telkomsel";
+  if (no.startsWith("0821") || no.startsWith("0822") || no.startsWith("0823")) return "Telkomsel (Loop)";
+  if (no.startsWith("0852") || no.startsWith("0853")) return "AS";
+  if (no.startsWith("0851")) return "By.U";
+  if (no.startsWith("0817") || no.startsWith("0818") || no.startsWith("0819")) return "XL Axiata";
+  if (no.startsWith("0857") || no.startsWith("0858")) return "Indosat";
+  if (no.startsWith("0896") || no.startsWith("0897") || no.startsWith("0898") || no.startsWith("0899")) return "Three (3)";
+  if (no.startsWith("0881") || no.startsWith("0882") || no.startsWith("0883")) return "Smartfren";
+  return "Tidak Diketahui";
+}
+
+function getWilayah(no) {
+  const prefix = no.substring(0, 4);
+  const wilayahMap = {
+    "0812": "Jabodetabek",
+    "0813": "Bandung",
+    "0821": "Semarang",
+    "0852": "Surabaya",
+    "0896": "Medan",
+    "0881": "Makassar",
+  };
+  return wilayahMap[prefix] || "Wilayah Tidak Diketahui";
+}
+
+  function parseNIK() {
+    const nik = document.getElementById("nikInput").value;
+    if (nik.length !== 16) return alert("NIK harus 16 digit.");
+    const kab = nik.substring(0, 4);
+    const tgl = parseInt(nik.substring(6, 8));
+    const bln = nik.substring(8, 10);
+    const thn = nik.substring(10, 12);
+    const gender = tgl > 40 ? "Perempuan" : "Laki-laki";
+    const tanggal = `${tgl > 40 ? tgl - 40 : tgl}-${bln}-19${thn}`;
+    const output = `NIK: ${nik}
+Tanggal Lahir: ${tanggal}
+Jenis Kelamin: ${gender}
+Kode Wilayah: ${kab}`;
+    document.getElementById("nikResult").textContent = output;
+    window.lastResult = output;
+  }
+
+function doDork() {
+  const query = document.getElementById("dorkInput").value.trim();
+  if (!query) return alert("Isi query dork dulu.");
+  const encoded = encodeURIComponent(query);
+  const searchURL = `https://www.google.com/search?q=${encoded}`;
+  window.open(searchURL, '_blank');
+  document.getElementById("dorkResult").textContent = `🔗 Dork dibuka: ${query}`;
+  window.lastResult = `Dork digunakan: ${query}`;
+}
+
+function findLoginPanel() {
+  const domain = document.getElementById("domainLogin").value.trim();
+  if (!domain) return alert("Masukkan domain target terlebih dahulu.");
+
+  const dorks = [
+    `site:${domain} inurl:admin`,
+    `site:${domain} inurl:login`,
+    `site:${domain} intitle:"admin"`,
+    `site:${domain} intitle:"login"`,
+    `site:${domain} inurl:panel`,
+    `site:${domain} inurl:dashboard`,
+    `site:${domain} inurl:cpanel`
+  ];
+
+  dorks.forEach(dork => {
+    const encoded = encodeURIComponent(dork);
+    const url = `https://www.google.com/search?q=${encoded}`;
+    window.open(url, '_blank');
+  });
+
+  document.getElementById("loginResult").textContent = `🔍 Dork login untuk ${domain} telah dibuka di tab baru.`;
+  window.lastResult = `Dork login digunakan untuk: ${domain}`;
+}
+
+  function searchDefacer() {
+    const defacer = document.getElementById('defacerInput').value.trim();
+    const result = document.getElementById('defacerResult');
+    if (defacer.length < 3) {
+      result.textContent = "❌ Nickname terlalu pendek";
+      return;
+    }
+
+    const googleLink = `https://www.google.com/search?q=site:zone-h.org+${encodeURIComponent(defacer)}`;
+    const zonehLink = `http://zone-h.org/archive/notifier=${encodeURIComponent(defacer)}`;
+
+    result.innerHTML = `💣 Jejak digital Defacer:\n\n🔍 <a href="${googleLink}" target="_blank">Cari di Google (zone-h)</a><br>🌐 <a href="${zonehLink}" target="_blank">Langsung ke arsip Zone-H</a>`;
+  }
+  
+  function lookupSosmed() {
+    const uname = document.getElementById("usernameInput").value;
+    const links = [
+      `https://instagram.com/${uname}`,
+      `https://twitter.com/${uname}`,
+      `https://facebook.com/${uname}`,
+      `https://tiktok.com/@${uname}`,
+      `https://github.com/${uname}`
+    ];
+    const output = "Jejak Sosmed:\n" + links.map(l => `🔗 ${l}`).join("\n");
+    document.getElementById("sosmedResult").textContent = output;
+    window.lastResult = output;
+  }
+
+  function exportResults() {
+    const blob = new Blob([window.lastResult || "Belum ada hasil OSINT."], {type: "text/plain"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "hasil_osint.txt";
+    a.click();
+  }
+</script>
+
+</body>
+</html>
